@@ -1,0 +1,109 @@
+public class ClosestPairDC {
+
+	public final static double INF = java.lang.Double.POSITIVE_INFINITY;
+
+	//
+	// findClosestPair()
+	//
+	// Given a collection of nPoints points, find and ***print***
+	//  * the closest pair of points
+	//  * the distance between them
+	// in the form "DC (x1, y1) (x2, y2) distance"
+	//
+
+	// INPUTS:
+	//  - points sorted in nondecreasing order by X coordinate
+	//  - points sorted in nondecreasing order by Y coordinate
+	//
+
+	public static void findClosestPair(XYPoint pointsByX[], XYPoint pointsByY[],boolean print){
+		double mindist = INF;
+		XYPoint a = new XYPoint();
+		XYPoint b = new XYPoint();
+		int nPoints = pointsByX.length;
+		if (nPoints==1){
+			return;
+		}else if(nPoints==2){
+			mindist = pointsByX[1].dist(pointsByX[0]);
+			a=pointsByX[0];
+			b=pointsByX[1];
+
+		}else{
+			int midpointindex = nPoints/2-1;
+			XYPoint midpoint=pointsByX[midpointindex];
+			//Initialize Arrays
+			XYPoint[] XLeft = new XYPoint[nPoints/2];
+			XYPoint[] XRight = new XYPoint[nPoints-XLeft.length];
+			XYPoint[] YLeft = new XYPoint[nPoints/2];
+			XYPoint[] YRight = new XYPoint[nPoints-XLeft.length];
+			//		System.out.println("Midpoint: "+ midpoint);
+
+
+			for(int i = 0; i< XLeft.length;i++){
+				XLeft[i]=pointsByX[i];
+				XRight[i]=pointsByX[midpointindex+1+i];
+			}
+			XRight[XRight.length-1]=pointsByX[nPoints-1];
+
+
+			int leftcounter=0;
+			int rightcounter=0;
+			for(int i = 0; i< pointsByY.length;i++){
+				if((pointsByY[i].isLeftOf(midpoint))||(pointsByY[i].num==midpoint.num)){
+					YLeft[leftcounter]=pointsByY[i];
+					leftcounter++;
+				}else{
+					YRight[rightcounter]=pointsByY[i];
+					rightcounter++;
+				}
+			}
+			//		System.out.println(" new Iteration Left");
+			//		for(int i = 0; i< XLeft.length;i++){
+			//			System.out.println(XLeft[i]+" "+YLeft[i]);
+			//		}
+
+			//		System.out.println(" new Iteration Right");
+			//		for(int i = 0; i< XRight.length;i++){
+			//			System.out.println(XRight[i]+" "+YRight[i]);
+			//		}
+
+			findClosestPair(XLeft,YLeft,false);
+			findClosestPair(XRight,YRight,false);
+
+
+
+
+
+
+
+
+
+			if(print){
+				XYPoint[] centerPoints = new XYPoint[pointsByY.length];
+				int counter = 0;
+				for(int i = 0;i<pointsByY.length;i++){
+					if ((midpoint.dist(pointsByY[i])<mindist)&&(midpoint.num!=pointsByY[i].num)){
+						centerPoints[counter]=pointsByY[i];
+						counter++;
+					}
+				}
+				double lrdist=mindist;
+				for(int i = 0; i<counter-2;i++){
+					for(int j = i+1; j<counter-1;j++){
+						if(centerPoints[i].dist(centerPoints[j])>lrdist){
+							continue;
+						}
+						if(centerPoints[i].dist(centerPoints[j])<mindist){
+							mindist=centerPoints[i].dist(centerPoints[j]);
+							a=centerPoints[i];
+							b=centerPoints[j];
+						}
+					}
+				}
+				System.out.println("DC "+" "+a+" "+b+" "+mindist);
+			}
+
+		}
+
+	}
+}
